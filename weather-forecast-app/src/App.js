@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import CityInput from './CityInput';
 import DateSelector from './DateSelector';
+import HourlyForecast from './HourlyForecast'; 
 
 const App = () => {
     const [city, setCity] = useState('');
@@ -49,6 +50,15 @@ const App = () => {
                 <p>Precipitation: {weatherData.current.precip_mm}%</p>
                 <p>Wind: {weatherData.current.wind_kph} km/h</p>
             </div>
+            )}
+
+          {weatherData && (
+                <div>
+                    {/* Check if hourly forecast data is available */}
+                    {weatherData.forecast && weatherData.forecast.forecastday[0].hour && (
+                        <HourlyForecast hourlyData={weatherData.forecast.forecastday[0].hour} />
+                    )}
+                </div>
             )}
         </div>
     );

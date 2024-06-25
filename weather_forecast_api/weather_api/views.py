@@ -19,7 +19,20 @@ class ForecastView(APIView):
             response = requests.get(weather_api_url)
             response.raise_for_status()
             forecast_data = response.json()
-            # Process and return the necessary forecast data here
-            return Response(forecast_data, status=status.HTTP_200_OK)
+
+            # Extract hourly forecast data for the requested date
+            hourly_forecast = forecast_data['forecast']['forecastday'][0]['hour']
+
+            # Return only the necessary hourly data
+            hourly_data = [
+                {
+                    'time': hour['time'],
+                    'temp_c': hour['temp_c'],
+                    'precip_mm': hour['precip_mm'],
+                    'wind_kph': hour['wind_kph']
+                }
+                for hour in hourly_forecast
+            ]
+            return Response({'forecast': {'forecastday': [{'hour': hourly_data}]}, 'current': forecast_data['current']}, status=status.HTTP_200_OK)
         except requests.exceptions.RequestException as e:
             return Response({"error": str(e)}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
